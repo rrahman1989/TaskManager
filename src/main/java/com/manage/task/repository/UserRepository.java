@@ -2,6 +2,7 @@ package com.manage.task.repository;
 
 import com.manage.task.domain.User;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,4 +34,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findOneWithAuthoritiesByEmailIgnoreCase(String email);
 
     Page<User> findAllByIdNotNullAndActivatedIsTrue(Pageable pageable);
+    
+  //  List<User> findByRolesIn(Collection <String> names, Pageable pageable);
+    
+    
 }

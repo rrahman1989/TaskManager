@@ -44,4 +44,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         "select task from Task task left join fetch task.user left join fetch task.status left join fetch task.priority left join fetch task.project where task.id =:id"
     )
     Optional<Task> findOneWithToOneRelationships(@Param("id") Long id);
+
+	
 }

@@ -72,7 +72,7 @@ class MailServiceIT {
 
     @Test
     void testSendEmail() throws Exception {
-        mailService.sendEmail("john.doe@example.com", "testSubject", "testContent", false, false);
+        mailService.sendEmail("rahman.reazur@yahoo.com", "testSubject", "testContent", false, false);
         verify(javaMailSender).send(messageCaptor.capture());
         MimeMessage message = messageCaptor.getValue();
         assertThat(message.getSubject()).isEqualTo("testSubject");

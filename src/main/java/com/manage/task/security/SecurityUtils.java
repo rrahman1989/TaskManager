@@ -97,4 +97,14 @@ public final class SecurityUtils {
     private static Stream<String> getAuthorities(Authentication authentication) {
         return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority);
     }
+
+	public static boolean isCurrentUserInRole(String admin) {
+		// TODO Auto-generated method stub
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(securityContext.getAuthentication())
+            .map(authentication -> authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(admin)))
+            .orElse(false);
+		
+	}
 }
