@@ -6,8 +6,22 @@ Main page styles
   display: inline-block;
   width: 347px;
   height: 497px;
-  background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
+  background: url('../../content/images/taskmanager.PNG') no-repeat center top;
   background-size: contain;
+}
+
+/*card*/
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #212529;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.15rem;
 }
 
 /* wait autoprefixer update to allow simple generation of high pixel density media query */
@@ -17,7 +31,7 @@ Main page styles
   only screen and (min-resolution: 192dpi),
   only screen and (min-resolution: 2dppx) {
   .hipster {
-    background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
+    background: url('../../content/images/taskmanager.PNG') no-repeat center top;
     background-size: contain;
   }
 }
