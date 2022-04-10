@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="task">
+      <h2 data-cy="taskDetailsHeading"><span>Task</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ task.id }}</span>
+        </dd>
+        <dt><span>Task Name</span></dt>
+        <dd>
+          <span>{{ task.taskName }}</span>
+        </dd>
+        <dt><span>Start Date</span></dt>
+        <dd>
+          <span>{{ task.startDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span>End Date</span></dt>
+        <dd>
+          <span>{{ task.endDate | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span>Description</span></dt>
+        <dd>
+          <span>{{ task.description }}</span>
+        </dd>
+        <dt><span>User</span></dt>
+        <dd>
+          <span>{{ task.user?.login }}</span>
+        </dd>
+        <dt><span>Status</span></dt>
+        <dd>
+          <div *ngIf="task.status">
+            <a [routerLink]="['/status', task.status?.id, 'view']">{{ task.status?.name }}</a>
+          </div>
+        </dd>
+        <dt><span>Priority</span></dt>
+        <dd>
+          <div *ngIf="task.priority">
+            <a [routerLink]="['/priority', task.priority?.id, 'view']">{{ task.priority?.name }}</a>
+          </div>
+        </dd>
+        <dt><span>Project</span></dt>
+        <dd>
+          <div *ngIf="task.project">
+            <a [routerLink]="['/project', task.project?.id, 'view']">{{ task.project?.name }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/task', task.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
