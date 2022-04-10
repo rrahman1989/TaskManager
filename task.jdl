@@ -1,0 +1,38 @@
+entity Task{
+	
+	taskName String required,
+	startDate Instant required,
+	endDate Instant required,
+	description TextBlob
+			
+}
+
+entity Status {
+
+	code String required,
+    name String required
+
+}
+
+entity Priority {
+	code String required,
+    name String required
+
+}
+
+entity Project{
+	code String required,
+    name String required
+
+}
+
+relationship ManyToOne {
+	
+	Task{user(login)} to User
+    Task{status(name)} to Status
+	Task{priority(name)} to Priority
+    Task{project(name)} to Project
+	
+}
+
+paginate Task with infinite-scroll
