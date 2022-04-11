@@ -10,7 +10,7 @@ Main page styles
   background-size: contain;
 }
 
-/*card*/
+/*card
 
 .card {
     position: relative;
@@ -18,11 +18,15 @@ Main page styles
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
-    background-color: #212529;
-    background-clip: border-box;
+    background-color: black;
+  	background-clip: border-box;
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 0.15rem;
-}
+}*/
+
+
+
+
 
 /* wait autoprefixer update to allow simple generation of high pixel density media query */
 @media only screen and (-webkit-min-device-pixel-ratio: 2),

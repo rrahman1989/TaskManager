@@ -127,6 +127,15 @@
   -webkit-animation: lds-pacman-2 1s linear infinite;
   animation: lds-pacman-2 1s linear infinite;
 }
+
+.card.jh-card {	
+
+	background-color: black;
+  
+}
+
+
+
 .app-loading .lds-pacman > div:nth-child(1) div {
   position: absolute;
   top: 97px;
