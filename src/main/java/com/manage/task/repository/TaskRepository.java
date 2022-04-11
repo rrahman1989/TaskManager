@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("select task from Task task where task.user.login = ?#{principal.username}")
-    List<Task> findByUserIsCurrentUser();
+    Page<Task> findByUserIsCurrentUser(Pageable pageable);
 
     default Optional<Task> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);

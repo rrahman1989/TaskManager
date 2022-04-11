@@ -3,31 +3,55 @@ package com.manage.task.web.rest;
 import com.manage.task.domain.Authority;
 import com.manage.task.domain.Task;
 import com.manage.task.domain.User;
+import com.manage.task.repository.AuthorityRepository;
 import com.manage.task.repository.TaskRepository;
+import com.manage.task.repository.UserRepository;
 import com.manage.task.security.AuthoritiesConstants;
 import com.manage.task.security.SecurityUtils;
+import com.manage.task.service.MailService;
+import com.manage.task.service.MailUtility;
+
+import com.manage.task.service.UserService;
 import com.manage.task.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+
+import tech.jhipster.config.JHipsterProperties;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+
+
+
+
+
 
 /**
  * REST controller for managing {@link com.manage.task.domain.Task}.
@@ -36,6 +60,8 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api")
 @Transactional
 public class TaskResource {
+	
+
 
 	private final Logger log = LoggerFactory.getLogger(TaskResource.class);
 
@@ -45,10 +71,16 @@ public class TaskResource {
 	private String applicationName;
 
 	private final TaskRepository taskRepository;
+	
+	private UserService us;
 
 	public TaskResource(TaskRepository taskRepository) {
 		this.taskRepository = taskRepository;
+	
+
 	}
+	
+
 
 	/**
 	 * {@code POST  /tasks} : Create a new task.
@@ -170,11 +202,12 @@ public class TaskResource {
 		List<Task> taskPage;
         if (eagerload) {
             page = taskRepository.findAllWithEagerRelationships(pageable);
-        } else {
-            page = taskRepository.findAll(pageable);
-        	//page = taskRepository.find
-        	        	
-        }
+        } if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+   		   taskRepository.findAll();
+   		 
+   	} else {
+  		   page = taskRepository.findByUserIsCurrentUser(pageable);
+   	}
 		
  		HttpHeaders headers = PaginationUtil
 				.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -192,23 +225,36 @@ public class TaskResource {
 //        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
 //        return ResponseEntity.ok().headers(headers).body(page.getContent());
 //    }
-
+	
+	
+	
+/*
     @GetMapping("/taskswithAdmin")
     public List<Task>getAllTasks() {
-
-
-    	log.debug("We are here: "  );
     	
-    	if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
-    		 return taskRepository.findAll();
-    	} else {
-    		return taskRepository.findByUserIsCurrentUser();
-    	}
     	
+
+    	//String emailAddress = us.getUserWithAuthorities().get().getEmail();
+    	
+    	//String login = SecurityUtils.getCurrentUserLogin().orElse("anonymoususer");
+    	
+
+    	log.debug("We are here: " );
+    	
+
+    //	MailUtility.sendEmail("rahman.reazur@yahoo.com", "Test Subject", "Test Body", "rahman.reazur1989@gmail.com", "Never143");
+//    	
+//    	if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+//    		 return taskRepository.findAll();
+//    		 
+//    	} else {
+//    		return taskRepository.findByUserIsCurrentUser();
+//    	}
+//    	
 		
     	
 
-    }
+    }*/
 
 	/**
 	 * {@code GET  /tasks/:id} : get the "id" task.
@@ -238,4 +284,8 @@ public class TaskResource {
 				.headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
 				.build();
 	}
+	
+	
 }
+
+
