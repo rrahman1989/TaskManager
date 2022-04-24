@@ -1,75 +1,88 @@
 package com.manage.task.service;
 
-import java.util.Properties;
-
-import javax.mail.Message;
+import com.manage.task.domain.User;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.MessageSource;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
+import tech.jhipster.config.JHipsterProperties;
 
+@Service
 public class MailUtility {
 	
-	public static void sendEmail(String to, String subject, String body, String userName, String password ) {
-		
-		// Recipient's email ID needs to be mentioned.
-      //  String to = "fromaddress@gmail.com";
+    private final static Logger log = LoggerFactory.getLogger(MailUtility.class);
 
-        // Sender's email ID needs to be mentioned
-        String from = "rahman.reazur1989@gmail.com";
+    private static final String USER = "user";
 
-        // Assuming you are sending email from through gmails smtp
-        String host = "smtp.gmail.com";
+    private static final String BASE_URL = "baseUrl";
 
-        // Get system properties
-        Properties properties = System.getProperties();
+    private static JHipsterProperties jHipsterProperties;
 
-        // Setup mail server
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "465");
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.auth", "true");
+    private static JavaMailSender javaMailSender;
 
-        // Get the Session object.// and pass username and password
-        Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+    private static MessageSource messageSource;
 
-            protected PasswordAuthentication getPasswordAuthentication() {
+    private static SpringTemplateEngine templateEngine;
 
-                return new PasswordAuthentication(userName, password);
-
-            }
-
-        });
-
-        // Used to debug SMTP issues
-        session.setDebug(true);
-
-        try {
-            // Create a default MimeMessage object.
-            MimeMessage message = new MimeMessage(session);
-
-            // Set From: header field of the header.
-            message.setFrom(new InternetAddress(from));
-
-            // Set To: header field of the header.
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-
-            // Set Subject: header field
-            message.setSubject(subject);
-
-            // Now set the actual message
-            message.setText(body);
-
-            System.out.println("sending...");
-            // Send message
-            Transport.send(message);
-            System.out.println("Sent message successfully....");
-        } catch (MessagingException mex) {
-            mex.printStackTrace();
-        }
-		
+	public MailUtility(JHipsterProperties jHipsterProperties, JavaMailSender javaMailSender,
+			MessageSource messageSource, SpringTemplateEngine templateEngine) {
+		this.jHipsterProperties = jHipsterProperties;
+		this.javaMailSender = javaMailSender;
+		this.messageSource = messageSource;
+		this.templateEngine = templateEngine;
 	}
+	
+    @Async
+    public static void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
+        log.debug(
+            "Send email[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
+            isMultipart,
+            isHtml,
+            to,
+            subject,
+            content
+        );
+
+        // Prepare message using a Spring helper
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        try {
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart, StandardCharsets.UTF_8.name());
+            message.setTo(to);
+            message.setFrom(jHipsterProperties.getMail().getFrom());
+            message.setSubject(subject);
+            message.setText(content, isHtml);
+            javaMailSender.send(mimeMessage);
+            log.debug("Sent email to User '{}'", to);
+        } catch (MailException | MessagingException e) {
+            log.warn("Email could not be sent to user '{}'", to, e);
+        }
+    }
+
+    @Async
+    public static void sendEmailFromTemplate(User user, String templateName, String titleKey) {
+        if (user.getEmail() == null) {
+            log.debug("Email doesn't exist for user '{}'", user.getLogin());
+            return;
+        }
+        Locale locale = Locale.forLanguageTag(user.getLangKey());
+        Context context = new Context(locale);
+        context.setVariable(USER, user);
+        context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+        String content = templateEngine.process(templateName, context);
+        String subject = messageSource.getMessage(titleKey, null, locale);
+        sendEmail(user.getEmail(), subject, content, false, true);
+    }
+    
+    
 
 }

@@ -31,7 +31,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query(
         value = "select distinct task from Task task left join fetch task.user left join fetch task.status left join fetch task.priority left join fetch task.project",
-        countQuery = "select count(distinct task) from Task task"
+        countQuery = "select count(distinct task) from Task task"      
     )
     Page<Task> findAllWithToOneRelationships(Pageable pageable);
 
@@ -44,6 +44,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         "select task from Task task left join fetch task.user left join fetch task.status left join fetch task.priority left join fetch task.project where task.id =:id"
     )
     Optional<Task> findOneWithToOneRelationships(@Param("id") Long id);
+    
+    @Query(value = "SELECT JHI_USER.EMAIL \n"
+    		+ "FROM JHI_USER JOIN TASK ON\n"
+    		+ "JHI_USER.ID = ?1 ", nativeQuery = true)
+    String getEmailAddress(Long userId);
+    
+    
+    @Query(value = "SELECT JHI_USER.EMAIL\n"
+    		+ "FROM JHI_USER where LOGIN = ?1", nativeQuery = true)
+    String getEmailAddressByUserName(String userName);
+    
 
+    
 	
 }
