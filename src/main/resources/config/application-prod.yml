@@ -53,6 +53,11 @@ spring:
     port: 587
     username: taskmanagerapp44@gmail.com
     password: Test1234$!
+    tsl: true
+    properties.mail.smtp:
+          auth: true
+          starttls.enable: true
+          ssl.trust: smtp.gmail.com
   thymeleaf:
     cache: true
   sleuth:
