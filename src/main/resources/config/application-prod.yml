@@ -49,10 +49,10 @@ spring:
   liquibase:
     contexts: prod
   mail:
-    host: localhost
-    port: 25
-    username:
-    password:
+    host: smtp.gmail.com
+    port: 587
+    username: taskmanagerapp44@gmail.com
+    password: Test1234$!
   thymeleaf:
     cache: true
   sleuth:
