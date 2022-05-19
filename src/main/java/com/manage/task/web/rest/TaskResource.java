@@ -119,6 +119,8 @@ public class TaskResource {
 
 		MailUtility.sendEmail(getEmailAddressByName, "There is a task that has been assigned to you",
 				task.toString(), false, false);
+		
+
 
 		return ResponseEntity
 				.created(new URI("/api/tasks/" + result.getId())).headers(HeaderUtil
